@@ -3,12 +3,34 @@
 <head>
     <title>HTML/Javascript Test</title>
     <script type="text/javascript" src="http://www.titansoft.com.sg/exam/jscript/jsr_class.js"> </script>
+    <!-  request jquery libs-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"> </script>
     <script type="text/javascript">
         //****************************** Begin of Your Javascript *****************************************************************************************************
         // Please write you javascript here.
 
 
+		var data = 
+		{
+			username:'MarkWang',
+			continentCode:'AS'
+		};
+		
 
+		$.ajax({
+				dataType: 'json',
+			    url: 'http://api.geonames.org/searchJSON',
+			    data: data,
+			    success: function(data) {
+			        
+			        $.each(data.geonames, function(key, val) {
+			            alert(val['lng'] + val["topnymName"]);
+			        });
+			       
+			    }
+			});
+
+			alert("test");
 
 
         //****************************** End of Your Javascript *****************************************************************************************************
