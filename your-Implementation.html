@@ -15,19 +15,20 @@
 			continentCode:'AS'
 		};
 		var GeoNames2D = new Array(7);
-		var continentCode=["AS","AF","EU","NA","OC","SA","AN"];
+		var continentCode=["AF","AS","EU","NA","OC","SA","AN"];
 		
-		for (var i=0; i<1; i++)
+		
+		//This function is not good, beacuse this function spend connect time and Resources
+		for (var i=0; i<6; i++)
 		{
 			GeoNames2D[i]=new Array();
 			data.continentCode=continentCode[i];
-			alert(data.continentCode);
 			
-			test(i);
+			ajaxFetch(i);
 			
 		}
 		
-		function test(i) 
+		function ajaxFetch(i) 
 		{
 			$.ajax({
 				dataType: 'json',
@@ -37,47 +38,55 @@
 			        
 			        $.each(data.geonames, function(key, val) 
 					{
-						GeoNames2D[i].push(val['countryName']);
+						var repeatName=0;
+						for(var j=0;j<GeoNames2D[i].length;j++)
+						{
+							if(GeoNames2D[i][j]==val['countryName'])
+								repeatName=1;
+						}
+						if(repeatName==0)
+							GeoNames2D[i].push(val['countryName']);
 			        });
 			       
 			    }
 			});
 		}
 		
-		function test2()
-		{
-			for(var j=0;j<5;j++)
-			{
-				alert(GeoNames2D[0][j]);
-			}
-		}
-		
-
-		
-
 		function continentOnClick() 
 		{
-			if(document.getElementById("continentAF").checked==true)
-			{
-				data.continentCode='AF';
-				getGeoNames();
-				test2();
-			}
-
+			removeCountry();
 			
+			for(var i=0;i<=continentCode.length;i++)
+				if(document.getElementById("continent"+continentCode[i]).checked==true)
+					insertCountry(i);
 		}	
-		function getGeoNames()
+		
+		function removeCountry()
 		{
-			
+			var selectCountry = document.getElementById("selectCountry");
+			for(var i=selectCountry.options.length-1;i>=0;i--)
+			{
+				selectCountry.remove(i);
+			}
 		}
-			
+		
+		function insertCountry(i)
+		{
+			var selectCountry = document.getElementById("selectCountry");
+			for(var j=0;j<GeoNames2D[i].length;j++)
+			{
+				var option = document.createElement("option");
+				option.text = GeoNames2D[i][j];
+				selectCountry.add(option, selectCountry[0]);
+			}
+		}
+		
 
         //****************************** End of Your Javascript *****************************************************************************************************
 	</script>
 </head>
 <body>
-
-		
+			
                 <!-- ***************************************************************** start of your implementation of HTML ******************************************************** -->
                 <h2>
                     Your implemetation</h2>
@@ -87,6 +96,7 @@
                             Continent
                         </td>
                         <td>
+								
                             <input type="checkbox" value="AF" id="continentAF" checked="checked" onclick="javascript:continentOnClick();"/>Africa
                             <input type="checkbox" value="AS" id="continentAS" onclick="javascript:continentOnClick();"/>Asia
                             <input type="checkbox" value="EU" id="continentEU" onclick="javascript:continentOnClick();"/>Europe
@@ -102,7 +112,7 @@
                             Country
                         </td>
                         <td>
-                            <select>
+                            <select id="selectCountry">
                                 <option>-- Please Select --</option>
                             </select>
                         </td>
