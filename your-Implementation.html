@@ -9,34 +9,75 @@
         //****************************** Begin of Your Javascript *****************************************************************************************************
         // Please write you javascript here.
 
-
 		var data = 
 		{
 			username:'MarkWang',
 			continentCode:'AS'
 		};
+		var GeoNames2D = new Array(7);
+		var continentCode=["AS","AF","EU","NA","OC","SA","AN"];
 		
-
-		$.ajax({
+		for (var i=0; i<1; i++)
+		{
+			GeoNames2D[i]=new Array();
+			data.continentCode=continentCode[i];
+			alert(data.continentCode);
+			
+			test(i);
+			
+		}
+		
+		function test(i) 
+		{
+			$.ajax({
 				dataType: 'json',
 			    url: 'http://api.geonames.org/searchJSON',
 			    data: data,
 			    success: function(data) {
 			        
-			        $.each(data.geonames, function(key, val) {
-			            alert(val['lng'] + val["topnymName"]);
+			        $.each(data.geonames, function(key, val) 
+					{
+						GeoNames2D[i].push(val['countryName']);
 			        });
 			       
 			    }
 			});
+		}
+		
+		function test2()
+		{
+			for(var j=0;j<5;j++)
+			{
+				alert(GeoNames2D[0][j]);
+			}
+		}
+		
 
-			alert("test");
+		
 
+		function continentOnClick() 
+		{
+			if(document.getElementById("continentAF").checked==true)
+			{
+				data.continentCode='AF';
+				getGeoNames();
+				test2();
+			}
+
+			
+		}	
+		function getGeoNames()
+		{
+			
+		}
+			
 
         //****************************** End of Your Javascript *****************************************************************************************************
 	</script>
 </head>
 <body>
+
+		
                 <!-- ***************************************************************** start of your implementation of HTML ******************************************************** -->
                 <h2>
                     Your implemetation</h2>
@@ -46,14 +87,14 @@
                             Continent
                         </td>
                         <td>
-                            <input type="checkbox" value="AF" checked="checked" />Africa
-                            <input type="checkbox" value="AS" />Asia
-                            <input type="checkbox" value="EU" />Europe
-                            <input type="checkbox" value="NA" />North American
+                            <input type="checkbox" value="AF" id="continentAF" checked="checked" onclick="javascript:continentOnClick();"/>Africa
+                            <input type="checkbox" value="AS" id="continentAS" onclick="javascript:continentOnClick();"/>Asia
+                            <input type="checkbox" value="EU" id="continentEU" onclick="javascript:continentOnClick();"/>Europe
+                            <input type="checkbox" value="NA" id="continentNA" onclick="javascript:continentOnClick();"/>North American
                             <br />
-                            <input type="checkbox" value="OC" />Oceania
-                            <input type="checkbox" value="SA" />South American
-                            <input type="checkbox" value="AN" />Anetatika
+                            <input type="checkbox" value="OC" id="continentOC" onclick="javascript:continentOnClick();"/>Oceania
+                            <input type="checkbox" value="SA" id="continentSA" onclick="javascript:continentOnClick();"/>South American
+                            <input type="checkbox" value="AN" id="continentAN" onclick="javascript:continentOnClick();"/>Anetatika
                         </td>
                     </tr>
                     <tr>
