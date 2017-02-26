@@ -12,7 +12,10 @@
 		var data = 
 		{
 			username:'MarkWang',
-			continentCode:'AS'
+			continentCode:'AS',
+			fcode:'PPLC',//seat of a first-order administrative division
+			maxRows:'1000' //query maximal number of row
+	
 		};
 		var GeoNames2D = new Array(7);
 		var continentCode=["AF","AS","EU","NA","OC","SA","AN"];
@@ -38,16 +41,11 @@
 			        
 			        $.each(data.geonames, function(key, val) 
 					{
-						var repeatName=0;
-						for(var j=0;j<GeoNames2D[i].length;j++)
-						{
-							if(GeoNames2D[i][j]==val['countryName'])
-								repeatName=1;
-						}
-						if(repeatName==0)
-							GeoNames2D[i].push(val['countryName']);
+						GeoNames2D[i].push(val['countryName']);
 			        });
-			       
+			    				       
+					GeoNames2D[i].sort();
+					GeoNames2D[i].reverse();
 			    }
 			});
 		}
@@ -81,6 +79,70 @@
 			}
 		}
 		
+		function changeCountry()
+		{
+			removeCountry();
+			var selectCountry = document.getElementById("selectCountry");
+			var country= selectCountry.options[selectCountry.selectedIndex].value;
+			insertCity(country);
+			 
+		}
+		
+		function removeCountry()
+		{
+			var selectCity = document.getElementById("selectCity");
+			for(var i=selectCity.options.length-1;i>=0;i--)
+			{
+				selectCity.remove(i);
+			}
+		}
+		
+		function insertCity(country)
+		{
+			var selectCity = document.getElementById("selectCity");
+			var arrayCity=new Array();
+			var data = 
+			{
+				username:'MarkWang',
+				q:'Taiwan',
+				fcode:'ADM2',//seat of a first-order administrative division
+				maxRows:'1000' //query maximal number of row
+		
+			};
+			data.q=country;
+
+			$.ajax({
+					dataType: 'json',
+				    url: 'http://api.geonames.org/searchJSON',
+				    data: data,
+				    success: function(data) {
+				        
+				        $.each(data.geonames, function(key, val) 
+						{
+							arrayCity.push(val['name']);
+							
+					    });
+				       
+						arrayCity.sort();
+						arrayCity.reverse();
+						
+						for(var i=0;i<arrayCity.length;i++)
+				        {
+							var option = document.createElement("option");
+							option.text =arrayCity[i];
+							selectCity.add(option, selectCity[0]);	
+				    	}
+
+				    }
+			});
+			
+
+			
+				
+			
+		}
+
+		
 
         //****************************** End of Your Javascript *****************************************************************************************************
 	</script>
@@ -112,7 +174,7 @@
                             Country
                         </td>
                         <td>
-                            <select id="selectCountry">
+                            <select id="selectCountry" onchange="changeCountry();">
                                 <option>-- Please Select --</option>
                             </select>
                         </td>
@@ -122,7 +184,7 @@
                             City
                         </td>
                         <td>
-                            <select>
+                            <select id="selectCity">
                                 <option>-- Please Select --</option>
                             </select>
                         </td>
