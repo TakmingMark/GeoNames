@@ -20,7 +20,8 @@
 		var GeoNames2D = new Array(7);
 		var continentCode=["AF","AS","EU","NA","OC","SA","AN"];
 		var hashMapCity={};
-		
+		var logCitySum=0; 
+		var logCity=new Array();
 		//This function is not good, beacuse this function spend connect time and Resources
 		for (var i=0; i<6; i++)
 		{
@@ -85,7 +86,7 @@
 			var selectCountry = document.getElementById("selectCountry");
 			var country= selectCountry.options[selectCountry.selectedIndex].value;
 // 			insertCity(country);
-			test();
+			test(country);
 			 
 		}
 		
@@ -141,11 +142,64 @@
 		
 		
 		//need fetch log	
-		function test()
+		function test(country)
 		{
-			hashMapCity['test']="test2";
-			alert(hashMapCity['test']);
-			alert(hashMapCity.hasOwnProperty("test2") );
+						
+			if(hashMapCity.hasOwnProperty(country))
+			{
+				var arrayCity=logCity[hashMapCity[country]];
+				var selectCity = document.getElementById("selectCity");
+				for(var i=0;i<arrayCity.length;i++)
+				{
+					var option = document.createElement("option");
+					option.text =arrayCity[i];
+					selectCity.add(option, selectCity[0]);	
+				}
+				hashMapCity[country]
+			}
+			else
+			{
+
+				hashMapCity[country]=logCitySum++;
+				var arrayCity=new Array();
+				var selectCity = document.getElementById("selectCity");
+				var data = 
+				{
+					username:'MarkWang',
+					q:'Taiwan',
+					fcode:'ADM2',//seat of a first-order administrative division
+					maxRows:'1000' //query maximal number of row
+			
+				};
+				data.q=country;
+	
+				$.ajax({
+						dataType: 'json',
+					    url: 'http://api.geonames.org/searchJSON',
+					    data: data,
+					    success: function(data) {
+					        
+					        $.each(data.geonames, function(key, val) 
+							{
+								arrayCity.push(val['name']);
+								
+						    });
+					       
+							arrayCity.sort();
+							arrayCity.reverse();
+							
+							for(var i=0;i<arrayCity.length;i++)
+					        {
+								var option = document.createElement("option");
+								option.text =arrayCity[i];
+								selectCity.add(option, selectCity[0]);	
+					    	}
+					    	logCity.push(arrayCity);
+					    }
+				});
+
+			}
+
 		}
 
 		
