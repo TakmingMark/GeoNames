@@ -19,7 +19,7 @@
 		};
 		var GeoNames2D = new Array(7);
 		var continentCode=["AF","AS","EU","NA","OC","SA","AN"];
-		
+		var hashMapCity={};
 		
 		//This function is not good, beacuse this function spend connect time and Resources
 		for (var i=0; i<6; i++)
@@ -143,8 +143,9 @@
 		//need fetch log	
 		function test()
 		{
-		
-		
+			hashMapCity['test']="test2";
+			alert(hashMapCity['test']);
+			alert(hashMapCity.hasOwnProperty("test2") );
 		}
 
 		
