@@ -17,22 +17,21 @@
 			maxRows:'1000' //query maximal number of row
 	
 		};
-		var GeoNames2D = new Array(7);
-		var continentCode=["AF","AS","EU","NA","OC","SA","AN"];
-		var hashMapCity={};
-		var logCitySum=0; 
-		var logCity=new Array();
+		var geoCountryArray = new Array(7);
+		var geoContinentArray=["AF","AS","EU","NA","OC","SA","AN"];
+		var geoCityhashMap={}; //query city log is exist
+		var geoCityArray=new Array();
+		var citySum=0; 
+		
 		//This function is not good, beacuse this function spend connect time and Resources
 		for (var i=0; i<6; i++)
 		{
-			GeoNames2D[i]=new Array();
-			data.continentCode=continentCode[i];
-			
-			ajaxFetch(i);
-			
+			geoCountryArray[i]=new Array();
+			data.continentCode=geoContinentArray[i];
+			ajaxCountry(i);
 		}
 		
-		function ajaxFetch(i) 
+		function ajaxCountry(i) 
 		{
 			$.ajax({
 				dataType: 'json',
@@ -42,11 +41,11 @@
 			        
 			        $.each(data.geonames, function(key, val) 
 					{
-						GeoNames2D[i].push(val['countryName']);
+						geoCountryArray[i].push(val['countryName']);
 			        });
 			    				       
-					GeoNames2D[i].sort();
-					GeoNames2D[i].reverse();
+					geoCountryArray[i].sort();
+					geoCountryArray[i].reverse();
 			    }
 			});
 		}
@@ -54,125 +53,71 @@
 		function continentOnClick() 
 		{
 			removeCountry();
-			
-			for(var i=0;i<=continentCode.length;i++)
-				if(document.getElementById("continent"+continentCode[i]).checked==true)
+
+			for(var i=0;i<=geoContinentArray.length;i++)
+				if(document.getElementById("continent"+geoContinentArray[i]).checked==true)
 					insertCountry(i);
 		}	
 		
 		function removeCountry()
 		{
 			var selectCountry = document.getElementById("selectCountry");
+		
 			for(var i=selectCountry.options.length-1;i>=0;i--)
-			{
 				selectCountry.remove(i);
-			}
 		}
 		
 		function insertCountry(i)
 		{
 			var selectCountry = document.getElementById("selectCountry");
-			for(var j=0;j<GeoNames2D[i].length;j++)
+			
+			for(var j=0;j<geoCountryArray[i].length;j++)
 			{
 				var option = document.createElement("option");
-				option.text = GeoNames2D[i][j];
+				option.text = geoCountryArray[i][j];
 				selectCountry.add(option, selectCountry[0]);
 			}
 		}
 		
-		function changeCountry()
+		function countryOnItemClick()
 		{
-			removeCountry();
+			removeCity();
 			var selectCountry = document.getElementById("selectCountry");
 			var country= selectCountry.options[selectCountry.selectedIndex].value;
-// 			insertCity(country);
-			test(country);
-			 
+			insertCity(country);	 
 		}
 		
-		function removeCountry()
+		function removeCity()
 		{
 			var selectCity = document.getElementById("selectCity");
+			
 			for(var i=selectCity.options.length-1;i>=0;i--)
-			{
 				selectCity.remove(i);
-			}
 		}
-		
+			
 		function insertCity(country)
 		{
-			var selectCity = document.getElementById("selectCity");
-			var arrayCity=new Array();
-			var data = 
+			var selectCity = document.getElementById("selectCity");	
+			var cityArray;
+			if(geoCityhashMap.hasOwnProperty(country))
 			{
-				username:'MarkWang',
-				q:'Taiwan',
-				fcode:'ADM2',//seat of a first-order administrative division
-				maxRows:'1000' //query maximal number of row
-		
-			};
-			data.q=country;
+				cityArray=geoCityArray[geoCityhashMap[country]];
 
-			$.ajax({
-					dataType: 'json',
-				    url: 'http://api.geonames.org/searchJSON',
-				    data: data,
-				    success: function(data) {
-				        
-				        $.each(data.geonames, function(key, val) 
-						{
-							arrayCity.push(val['name']);
-							
-					    });
-				       
-						arrayCity.sort();
-						arrayCity.reverse();
-						
-						for(var i=0;i<arrayCity.length;i++)
-				        {
-							var option = document.createElement("option");
-							option.text =arrayCity[i];
-							selectCity.add(option, selectCity[0]);	
-				    	}
-				    }
-			});
-			
-
-		}
-		
-		
-		//need fetch log	
-		function test(country)
-		{
-						
-			if(hashMapCity.hasOwnProperty(country))
-			{
-				var arrayCity=logCity[hashMapCity[country]];
-				var selectCity = document.getElementById("selectCity");
-				for(var i=0;i<arrayCity.length;i++)
+				for(var i=0;i<cityArray.length;i++)
 				{
 					var option = document.createElement("option");
-					option.text =arrayCity[i];
+					option.text =cityArray[i];
 					selectCity.add(option, selectCity[0]);	
 				}
-				hashMapCity[country]
 			}
 			else
 			{
-
-				hashMapCity[country]=logCitySum++;
-				var arrayCity=new Array();
-				var selectCity = document.getElementById("selectCity");
-				var data = 
-				{
-					username:'MarkWang',
-					q:'Taiwan',
-					fcode:'ADM2',//seat of a first-order administrative division
-					maxRows:'1000' //query maximal number of row
-			
-				};
+				cityArray=new Array();
+				
+				data.continentCode='';
 				data.q=country;
-	
+				data.fcode='ADM2';
+				
 				$.ajax({
 						dataType: 'json',
 					    url: 'http://api.geonames.org/searchJSON',
@@ -181,20 +126,21 @@
 					        
 					        $.each(data.geonames, function(key, val) 
 							{
-								arrayCity.push(val['name']);
+								cityArray.push(val['name']);
 								
 						    });
 					       
-							arrayCity.sort();
-							arrayCity.reverse();
+							cityArray.sort();
+							cityArray.reverse();
 							
-							for(var i=0;i<arrayCity.length;i++)
+							for(var i=0;i<cityArray.length;i++)
 					        {
 								var option = document.createElement("option");
-								option.text =arrayCity[i];
+								option.text =cityArray[i];
 								selectCity.add(option, selectCity[0]);	
 					    	}
-					    	logCity.push(arrayCity);
+					    	geoCityhashMap[country]=citySum++;
+					    	geoCityArray.push(cityArray);
 					    }
 				});
 
@@ -234,7 +180,7 @@
                             Country
                         </td>
                         <td>
-                            <select id="selectCountry" onchange="changeCountry();">
+                            <select id="selectCountry" onchange="countryOnItemClick();">
                                 <option>-- Please Select --</option>
                             </select>
                         </td>
